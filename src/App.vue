@@ -64,6 +64,8 @@
                             </template>
                             <v-list>
                               <v-list-item @click="$router.push('search')"><v-list-item-title>{{ $t("Search") }}</v-list-item-title></v-list-item>
+                              <v-list-item v-if="!signedin" @click="$router.push('login')"><v-list-item-title>{{ $t("Login") }}</v-list-item-title></v-list-item>
+                              <v-list-item v-if="signedin" @click="logout"><v-list-item-title>{{ $t("Logout") }}</v-list-item-title></v-list-item>
                             </v-list>
                           </v-menu>
                         </v-app-bar-nav-icon>
@@ -72,6 +74,12 @@
                       <v-toolbar-items class="hidden-sm-and-down no-height-inherit">
                         <v-hover v-slot:default="{ hover }">
                           <router-link :class="hover ? 'ph-button primary' : 'ph-button grey'" :to="{ path: '/search' }">{{ $t("Search") }}</router-link>
+                        </v-hover>
+                        <v-hover v-if="!signedin" v-slot:default="{ hover }">
+                          <router-link :class="hover ? 'ph-button primary' : 'ph-button grey'" :to="{ path: '/login' }">{{ $t("Login") }}</router-link>
+                        </v-hover>
+                        <v-hover v-if="signedin" v-slot:default="{ hover }">
+                          <a class="flat dark ph-button grey" @click="logout" >{{ $t("Logout") }}</a>
                         </v-hover>
                       </v-toolbar-items>
                     </v-toolbar>
