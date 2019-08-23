@@ -49,7 +49,7 @@
                   <v-row>
                     <v-col class="text-left" cols="10" offset="1">
                       <icon left dark name="univie-right" color="#a4a4a4" width="14px" height="14px" class="mb-1"></icon>
-                      <router-link class="subheading primary--text mx-3" :to="'/'">pvc-example-2</router-link>
+                      <router-link class="subheading primary--text mx-3" :to="'/'">{{ appconfig.title }}</router-link>
                     </v-col>
                   </v-row>
 

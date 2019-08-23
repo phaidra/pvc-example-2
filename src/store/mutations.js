@@ -9,7 +9,7 @@ export default {
         to: 'https://www.univie.ac.at'
       },
       {
-        text: state.instanceconfig.title,
+        text: state.appconfig.title,
         to: '/'
       }
     ]
