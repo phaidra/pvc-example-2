@@ -26,7 +26,7 @@ export function createRouter () {
         path: '/search',
         name: 'search',
         component: PSearch,
-        props: { ownerProp: configjs.global.owner }
+        props: { ownerProp: configjs.global.search.owner }
       },
       {
         path: '/detail/:pid',
