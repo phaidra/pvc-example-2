@@ -1,13 +1,19 @@
 <template>
-  <div class="home">
-    <h5>{{ $t("PHAIDRA_IS") }}</h5>
-    <p-search :owner="'externb18'"></p-search>
-  </div>
+  <v-container>
+    <v-row>
+      <v-col>
+        <h5>This is an example application</h5>
+      </v-col>
+    </v-row>
+  </v-container>
 </template>
 
 <script>
+import { context } from '../mixins/context'
+
 export default {
-  name: 'home'
+  name: 'home',
+  mixins: [ context ]
 }
 </script>
 

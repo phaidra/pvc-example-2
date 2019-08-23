@@ -1,116 +1,135 @@
 <template>
   <v-app>
     <v-container fluid>
-      <v-layout row wrap>
+      <v-row no-gutters>
+        <v-col>
 
-        <v-flex xs12>
           <quicklinks :showquicklinks="quicklinksenabled"></quicklinks>
-        </v-flex>
 
-        <v-flex xs12 md10 offset-md1 class="header">
+          <v-row no-gutters>
+            <v-col cols="12" md="10" offset-md="1" class="header">
 
-          <v-layout row wrap>
-            <v-flex xs3 text-xs-left>
-              <router-link :to="'/'">
-                <img src="./assets/Uni_Logo_2016.png" class="logo" alt="logo" />
-              </router-link>
-            </v-flex>
+              <v-row no-gutters>
+                <v-col class="text-left" cols="3" >
+                  <router-link :to="'/'">
+                    <img src="./assets/Uni_Logo_2016.png" class="logo" alt="logo" />
+                  </router-link>
+                </v-col>
 
-            <v-flex xs9>
+                <v-col cols="9">
 
-              <v-layout column fill-height>
-                <v-flex>
-                  <v-layout row wrap >
-                    <v-flex text-xs-right>
-                      <router-link v-if="settings.global.enablelogin" :to="'/login'"><v-btn flat icon color="grey lighten-1" class="v-align-top top-margin-3"><icon name="material-social-person" width="24px" height="24px"></icon></v-btn></router-link>
+                  <v-row justify="end">
+                    <icon v-if="signedin" class="personicon mr-2 univie-grey" name="material-social-person" width="24px" height="24px"></icon>
+                    <span v-if="signedin" class="subheading displayname univie-grey">{{ user.firstname }} {{ user.lastname }}</span>
 
-                      <span v-if="signedin" class="subheading displayname grey--text text--lighten-1">{{ user.firstname }} {{ user.lastname }}</span>
-
-                      <v-menu bottom transition="slide-y-transition" class="v-align-top">
-                        <v-btn flat icon slot="activator" color="grey lighten-1" class="top-margin-3">
-                          {{$i18n.locale}}
-                          <icon name="univie-sprache" class="lang-icon"></icon>
+                    <v-menu bottom transition="slide-y-transition" class="v-align-top">
+                      <template v-slot:activator="{ on }">
+                        <v-btn text v-on="on" class="top-margin-lang">
+                          <span class="grey--text text--darken-1">{{$i18n.locale}}</span>
+                          <icon name="univie-sprache" class="lang-icon grey--text text--darken-1"></icon>
                         </v-btn>
-                        <v-list>
-                          <v-list-tile @click="$i18n.locale='eng'">
-                            <v-list-tile-title>English</v-list-tile-title>
-                          </v-list-tile>
-                          <v-list-tile @click="$i18n.locale='deu'">
-                            <v-list-tile-title>Deutsch</v-list-tile-title>
-                          </v-list-tile>
-                          <v-list-tile @click="$i18n.locale='ita'">
-                            <v-list-tile-title>Italiano</v-list-tile-title>
-                          </v-list-tile>
-                        </v-list>
-                      </v-menu>
+                      </template>
+                      <v-list>
+                        <v-list-item @click="$i18n.locale='eng'">
+                          <v-list-item-title>English</v-list-item-title>
+                        </v-list-item>
+                        <v-list-item @click="$i18n.locale='deu'">
+                          <v-list-item-title>Deutsch</v-list-item-title>
+                        </v-list-item>
+                        <v-list-item @click="$i18n.locale='ita'">
+                          <v-list-item-title>Italiano</v-list-item-title>
+                        </v-list-item>
+                      </v-list>
+                    </v-menu>
 
-                      <a id="quicklinks-button" v-if="isUnivie" class="ph-button" v-on:click="quicklinksenabled = !quicklinksenabled">Quicklinks</a>
-                    </v-flex>
-                  </v-layout>
-                </v-flex>
-                <v-layout >
-                  <v-flex v-if="settings.global.showinstanceswitch" xs4 text-xs-left class="select-instance">
-                    <v-select :items="instances" @input="switchInstance" :value="settings.instance.baseurl" item-text="baseurl" single-line></v-select>
-                  </v-flex>
-                  <v-flex xs10 offset-xs1 text-xs-left v-else-if="settings.instance.title">
-                    <icon left dark name="univie-right" color="#a4a4a4" width="14px" height="14px"></icon>
-                    <router-link class="subheading primary--text mx-3" :to="'/'">{{ settings.instance.title }}</router-link>
-                  </v-flex>
-                </v-layout>
-                <v-flex>
-                  <v-toolbar flat color="white" dense>
-                    <v-toolbar-side-icon class="hidden-md-and-up">
-                      <v-menu offset-y>
-                        <v-btn flat icon color="grey lighten-1" slot="activator"><icon name="material-navigation-menu" width="24px" height="24px"></icon></v-btn>
-                        <v-list>
-                          <v-list-tile v-if="!signedin && settings.global.enablelogin" @click="$router.push('login')"><v-list-tile-title>{{ $t("Login") }}</v-list-tile-title></v-list-tile>
-                          <v-list-tile v-if="signedin" @click="$router.push('/')"><v-list-tile-title>{{ $t("Logout") }}</v-list-tile-title></v-list-tile>
-                        </v-list>
-                      </v-menu>
-                    </v-toolbar-side-icon>
-                    <v-spacer></v-spacer>
-                    <v-toolbar-items class="hidden-sm-and-down no-height-inherit">
-                      <router-link class="ph-button" v-if="!signedin && settings.global.enablelogin" :to="'/login'">{{ $t("Login") }}</router-link>
-                      <router-link class="ph-button" v-if="signedin" :to="''" @click="logout" >{{ $t("Logout") }}</router-link>
-                    </v-toolbar-items>
-                  </v-toolbar>
-                </v-flex>
-              </v-layout>
+                    <a id="quicklinks-button" class="ph-button" v-on:click="quicklinksenabled = !quicklinksenabled">Quicklinks</a>
 
-            </v-flex>
-          </v-layout>
+                  </v-row>
 
-        </v-flex>
+                  <v-row>
+                    <v-col class="text-left" cols="10" offset="1">
+                      <icon left dark name="univie-right" color="#a4a4a4" width="14px" height="14px" class="mb-1"></icon>
+                      <router-link class="subheading primary--text mx-3" :to="'/'">pvc-example-2</router-link>
+                    </v-col>
+                  </v-row>
 
-        <v-flex xs12 md10 offset-md1 class="content">
+                  <v-row>
 
-          <v-alert v-for="(alert, i) in alerts" :type="(alert.type === 'danger' ? 'error' : alert.type)" :value="true" transition="slide-y-transition" :key="i">
-              <v-layout row><v-flex class="pa-3">{{alert.msg}}</v-flex><v-spacer></v-spacer><v-btn icon @click.native="dismiss(alert)"><v-icon>close</v-icon></v-btn></v-layout>
-            </v-alert>
-            <transition name="fade" mode="out-in">
-              <keep-alive>
-                <router-view class="mt-4 mb-3"></router-view>
-              </keep-alive>
-            </transition>
+                    <v-toolbar flat color="white" dense>
+                      <client-only placeholder="loading" placeholder-tag="span">
+                        <v-app-bar-nav-icon class="hidden-md-and-up">
+                          <v-menu offset-y>
+                            <template v-slot:activator="{ on }">
+                              <v-btn text icon color="grey lighten-1" v-on="on"><icon name="material-navigation-menu" width="24px" height="24px"></icon></v-btn>
+                            </template>
+                            <v-list>
+                              <v-list-item @click="$router.push('search')"><v-list-item-title>{{ $t("Search") }}</v-list-item-title></v-list-item>
+                            </v-list>
+                          </v-menu>
+                        </v-app-bar-nav-icon>
+                      </client-only>
+                      <v-spacer></v-spacer>
+                      <v-toolbar-items class="hidden-sm-and-down no-height-inherit">
+                        <v-hover v-slot:default="{ hover }">
+                          <router-link :class="hover ? 'ph-button primary' : 'ph-button grey'" :to="{ path: '/search' }">{{ $t("Search") }}</router-link>
+                        </v-hover>
+                      </v-toolbar-items>
+                    </v-toolbar>
 
-        </v-flex>
+                  </v-row>
 
-        <v-flex xs12 >
-          <quicklinks-footer></quicklinks-footer>
-        </v-flex>
+                </v-col>
+              </v-row>
 
-        <v-flex xs12 md10 offset-md1>
-          <v-layout row wrap class="my-5">
-            <v-flex text-xs-left>
-              <span class="grey--text text--darken-2"><address>{{ settings.instance.address }} | <abbr title="Telefon">T</abbr> {{ settings.instance.phone }}</address></span>
-            </v-flex>
-            <v-flex text-xs-right>
-              <a href="http://datamanagement.univie.ac.at/" target="_blank">{{ $t('Servicepage') }}</a> | <router-link :to="'impressum'">{{ $t('Impressum') }}</router-link>
-            </v-flex>
-          </v-layout>
-        </v-flex>
+            </v-col>
+          </v-row>
 
-      </v-layout>
+          <v-row>
+            <v-col cols="12" md="10" offset-md="1" class="content">
+              <p-breadcrumbs :items="breadcrumbs"></p-breadcrumbs>
+
+              <v-row justify="center" v-for="(alert, i) in alerts" :key="i">
+                <v-col cols="12">
+                  <v-alert prominent dense :type="(alert.type === 'danger' ? 'error' : alert.type)" :value="true" transition="slide-y-transition">
+                    <v-row align="center">
+                      <v-col class="grow">{{alert.msg}}</v-col>
+                      <v-col class="shrink">
+                        <v-btn icon @click.native="dismiss(alert)"><v-icon>mdi-close</v-icon></v-btn>
+                      </v-col>
+                    </v-row>
+                  </v-alert>
+                </v-col>
+              </v-row>
+
+              <transition name="fade" mode="out-in">
+                <keep-alive>
+                  <router-view class="mb-3"></router-view>
+                </keep-alive>
+              </transition>
+
+            </v-col>
+          </v-row>
+
+          <v-row>
+            <v-col cols="12" v-if="isUnivie">
+              <quicklinks-footer></quicklinks-footer>
+            </v-col>
+          </v-row>
+
+          <v-row>
+            <v-col cols="12" md="10" offset-md="1">
+              <v-row   class="my-5">
+                <v-col class="text-left" >
+                  <span class="grey--text text--darken-2"><address>{{ instanceconfig.address }} | <abbr title="Telefon">T</abbr> {{ instanceconfig.phone }}</address></span>
+                </v-col>
+                <v-col class="text-right" >
+                  <a href="http://datamanagement.univie.ac.at/" target="_blank">{{ $t('Servicepage') }}</a> | <router-link :to="'impressum'">{{ $t('Impressum') }}</router-link>
+                </v-col>
+              </v-row>
+            </v-col>
+          </v-row>
+        </v-col>
+      </v-row>
     </v-container>
   </v-app>
 </template>
@@ -122,12 +141,17 @@ import QuicklinksFooter from '@/components/QuicklinksFooter'
 import '@/compiled-icons/material-social-person'
 import '@/compiled-icons/material-navigation-menu'
 import '@/compiled-icons/univie-sprache'
+import ClientOnly from 'vue-client-only'
+import { context } from '@/mixins/context'
+import { config } from '@/mixins/config'
 
 export default {
   name: 'app',
+  mixins: [ context, config ],
   components: {
     Quicklinks,
-    QuicklinksFooter
+    QuicklinksFooter,
+    ClientOnly
   },
   data () {
     return {
@@ -135,23 +159,17 @@ export default {
     }
   },
   computed: {
-    signedin () {
-      return this.$store.state.user.token ? 1 : 0
-    },
-    user () {
-      return this.$store.state.user
+    breadcrumbs () {
+      return this.$store.state.breadcrumbs
     },
     alerts () {
-      return this.$store.state.alerts.alerts
-    },
-    settings () {
-      return this.$store.state.settings
+      return this.$store.state.alerts
     },
     instances () {
       return Object.keys(this.$store.state.config.instances)
     },
     isUnivie () {
-      switch (this.$store.state.settings.instance.baseurl) {
+      switch (this.instanceconfig.baseurl) {
         case 'phaidra.univie.ac.at':
         case 'phaidra-sandbox.univie.ac.at':
         case 'phaidra-entw.univie.ac.at':
@@ -175,32 +193,24 @@ export default {
     },
     dismiss: function (alert) {
       this.$store.commit('clearAlert', alert)
-    },
-    switchInstance: function (e) {
-      this.$store.dispatch('switchInstance', e).then(() => {
-        // this commits initStore in every store module which has it
-        this.$store.commit('initStore')
-        this.$router.push('/search')
-        this.$store.dispatch('search')
-        this.$vuetify.theme.primary = this.$store.state.settings.instance.primary
-      })
     }
   },
   mounted: function () {
     var token = this.getCookie('X-XSRF-TOKEN')
     if (token) {
       this.$store.commit('setToken', token)
+      if (!this.user.username) {
+        // TODO get user from token
+      }
     }
   },
   created: function () {
-    this.$store.dispatch('initSettings')
-    this.$store.commit('initStore')
-    this.$vuetify.theme.primary = this.$store.state.settings.instance.primary
+    this.$vuetify.theme.themes.light.primary = this.$store.state.instanceconfig.primary
   }
 }
 </script>
 
-<style lang="stylus">
+<style lang="sass">
   @require './stylus/main'
 </style>
 
@@ -211,7 +221,34 @@ export default {
 }
 
 .svg-icon {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  color: inherit;
+  vertical-align: middle;
+  fill: none;
+  stroke: currentColor;
+}
+
+.svg-fill {
   fill: currentColor;
+  stroke: none;
+}
+
+.svg-up {
+  transform: rotate(0deg);
+}
+
+.svg-right {
+  transform: rotate(90deg);
+}
+
+.svg-down {
+  transform: rotate(180deg);
+}
+
+.svg-left {
+  transform: rotate(-90deg);
 }
 
 .ie-fixMinHeight {
@@ -260,10 +297,6 @@ address {
   vertical-align: top;
 }
 
-.top-margin-3 {
-  margin-top: 3px;
-}
-
 .lang-icon {
   margin-left: 5px;
 }
@@ -275,7 +308,6 @@ address {
 }
 
 .ph-button  {
-  background-color: #909090;
   color: white !important;
   box-sizing: border-box;
   -webkit-user-select: none;
@@ -354,9 +386,17 @@ address {
   text-transform: none;
   font-weight: 300;
 }
+
+.univie-grey {
+  color: #7b7b7b
+}
 </style>
 
 <style scoped>
+.top-margin-lang {
+  margin-top: 0px;
+}
+
 .content {
   min-height: 800px;
 }
@@ -368,4 +408,13 @@ address {
 .no-height-inherit {
   height: unset;
 }
+
+.personicon {
+  align-self: center;
+}
+
+.float-right {
+  float: right;
+}
+
 </style>
