@@ -1,1 +1,1 @@
-/etc/phaidra/phaidra-ui.js
+/etc/phaidra/pvc-example-2.js
